@@ -2,6 +2,7 @@ package exe201.flexora.controller;
 
 import exe201.flexora.dto.ClubMemberDTO;
 import exe201.flexora.dto.JoinClubDTO;
+import exe201.flexora.dto.LeaveRoomDTO;
 import exe201.flexora.service.ClubMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,4 +32,6 @@ public class ClubMemberController {
         // Trả về 204 No Content - chuẩn cho một lệnh DELETE thành công
         return ResponseEntity.noContent().build();
     }
+
+
 }

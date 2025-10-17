@@ -18,6 +18,6 @@ public class ClubMemberDTO {
     private String clubName;
 
     // Thông tin về tư cách thành viên
-    private String role;
+//    private String role;
     private LocalDateTime joinedAt;
 }

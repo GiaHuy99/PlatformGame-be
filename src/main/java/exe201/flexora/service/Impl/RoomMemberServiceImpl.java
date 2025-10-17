@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomMemberServiceImpl implements RoomMemberService  {
@@ -79,5 +81,42 @@ public class RoomMemberServiceImpl implements RoomMemberService  {
         room.setMembersCount(room.getMembersCount() + 1);
         roomRepository.save(room);
         return roomMemberMapper.toDto(savedMember);
+    }
+
+    @Override
+    @Transactional
+    public void leaveRoom(Long userId, Long roomId) throws Exception {
+        // KIỂM TRA #1: Người dùng có thực sự ở trong phòng không?
+        if (!roomMemberRepository.existsByUser_IdAndRoom_Id(userId, roomId)) {
+            throw new Exception("Bạn không phải là thành viên của phòng này để có thể rời đi.");
+        }
+
+        // Lấy thông tin Room để cập nhật lại số lượng thành viên
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new Exception("Không tìm thấy phòng với ID: " + roomId));
+
+        // HÀNH ĐỘNG #1: Xóa bản ghi thành viên
+        roomMemberRepository.deleteByUser_IdAndRoom_Id(userId, roomId);
+
+        // HÀNH ĐỘNG #2: Cập nhật lại số lượng thành viên
+        // Đảm bảo count không bao giờ < 0
+        int currentCount = room.getMembersCount();
+        room.setMembersCount(Math.max(0, currentCount - 1));
+        roomRepository.save(room);
+    }
+
+    @Override
+    public List<RoomMemberDTO> getRoomMembers(Long roomId) throws Exception{
+        if (!roomRepository.existsById(roomId)) {
+            throw new Exception("Không tìm thấy phòng với ID: " + roomId);
+        }
+
+        // BƯỚC 1: Lấy danh sách các entity RoomMember từ database
+        List<RoomMember> members = roomMemberRepository.findByRoom_Id(roomId);
+
+        // BƯỚC 2: Dùng Mapper để chuyển đổi danh sách entity sang danh sách DTO
+        return members.stream()
+                .map(roomMemberMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

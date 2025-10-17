@@ -19,6 +19,6 @@ public class RoomMemberDTO {
     private String roomName;
 
     // Thông tin về tư cách thành viên
-    private String role;
+//    private String role;
     private LocalDateTime joinedAt;
 }
