@@ -1,0 +1,25 @@
+package exe201.flexora.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Objects;
+@AllArgsConstructor
+@NoArgsConstructor
+public class RoomMemberId implements Serializable {
+    private Long user; // Tên phải khớp với trường 'user' trong RoomMember
+    private Long room; // Tên phải khớp với trường 'room' trong RoomMember
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomMemberId that = (RoomMemberId) o;
+        return Objects.equals(user, that.user) && Objects.equals(room, that.room);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, room);
+    }
+}
