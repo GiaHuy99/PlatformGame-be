@@ -9,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
+
 public class CommunityDTO {
     private Long id;
     private String name;

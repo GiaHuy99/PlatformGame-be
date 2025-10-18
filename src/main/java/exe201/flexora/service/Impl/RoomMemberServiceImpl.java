@@ -1,5 +1,6 @@
 package exe201.flexora.service.Impl;
 
+import exe201.flexora.dto.ChatMessageDTO;
 import exe201.flexora.dto.RoomMemberDTO;
 import exe201.flexora.entity.Room;
 import exe201.flexora.entity.RoomMember;
@@ -12,6 +13,7 @@ import exe201.flexora.repository.UserRepository;
 import exe201.flexora.service.RoomMemberService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,8 @@ public class RoomMemberServiceImpl implements RoomMemberService  {
     private ClubMemberRepository clubMemberRepository;
     @Autowired
     private RoomMemberMapper roomMemberMapper;
-
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
     @Override
     @Transactional
     public RoomMemberDTO joinRoom(Long userId, Long roomId,String providedPassword)
@@ -76,33 +79,48 @@ public class RoomMemberServiceImpl implements RoomMemberService  {
         newMember.setJoinedAt(LocalDateTime.now());
         RoomMember savedMember = roomMemberRepository.save(newMember);
 
-
+        ChatMessageDTO joinMessage = new ChatMessageDTO();
+        joinMessage.setType(ChatMessageDTO.MessageType.JOIN);
+        joinMessage.setSender("Hệ thống");
+        joinMessage.setRoomId(roomId);
+        joinMessage.setContent(user.getUserName() + " đã tham gia phòng!");
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, joinMessage);
         // Cập nhật số lượng thành viên trong phòng
         room.setMembersCount(room.getMembersCount() + 1);
         roomRepository.save(room);
+
         return roomMemberMapper.toDto(savedMember);
     }
 
     @Override
     @Transactional
     public void leaveRoom(Long userId, Long roomId) throws Exception {
-        // KIỂM TRA #1: Người dùng có thực sự ở trong phòng không?
-        if (!roomMemberRepository.existsByUser_IdAndRoom_Id(userId, roomId)) {
-            throw new Exception("Bạn không phải là thành viên của phòng này để có thể rời đi.");
-        }
+        // TỐI ƯU: Lấy thẳng đối tượng RoomMember.
+        // Thao tác này vừa kiểm tra sự tồn tại, vừa cho chúng ta truy cập vào User và Room.
+        RoomMember member = roomMemberRepository.findByUser_IdAndRoom_Id(userId, roomId)
+                .orElseThrow(() -> new Exception(
+                        "Bạn không phải là thành viên của phòng này."));
 
-        // Lấy thông tin Room để cập nhật lại số lượng thành viên
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new Exception("Không tìm thấy phòng với ID: " + roomId));
+        // LỖI ĐÃ SỬA: Lấy thông tin User và Room trực tiếp từ đối tượng member đã lấy ra.
+        User user = member.getUser();
+        Room room = member.getRoom();
 
         // HÀNH ĐỘNG #1: Xóa bản ghi thành viên
-        roomMemberRepository.deleteByUser_IdAndRoom_Id(userId, roomId);
+        roomMemberRepository.delete(member); // Xóa bằng đối tượng hiệu quả hơn
 
         // HÀNH ĐỘNG #2: Cập nhật lại số lượng thành viên
-        // Đảm bảo count không bao giờ < 0
         int currentCount = room.getMembersCount();
         room.setMembersCount(Math.max(0, currentCount - 1));
-        roomRepository.save(room);
+        // KHÔNG CẦN roomRepository.save(room); nữa vì @Transactional sẽ tự lo.
+
+        // Gửi thông báo WebSocket sau khi logic đã xử lý xong
+        ChatMessageDTO leaveMessage = new ChatMessageDTO();
+        leaveMessage.setType(ChatMessageDTO.MessageType.LEAVE);
+        leaveMessage.setSender("Hệ thống"); // Hoặc user.getUserName() nếu bạn muốn
+        leaveMessage.setRoomId(roomId);
+        leaveMessage.setContent(user.getUserName() + " đã rời khỏi phòng!");
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, leaveMessage);
+
     }
 
     @Override

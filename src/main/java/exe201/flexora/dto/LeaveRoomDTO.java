@@ -7,6 +7,8 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
+@Data
+
 public class LeaveRoomDTO {
     private Long userId;
 }

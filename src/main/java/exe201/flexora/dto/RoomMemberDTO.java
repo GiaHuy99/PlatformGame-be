@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Builder
+@Data
+
 public class RoomMemberDTO {
     // Thông tin về người dùng (chỉ lấy những gì cần thiết)
     private Long userId;

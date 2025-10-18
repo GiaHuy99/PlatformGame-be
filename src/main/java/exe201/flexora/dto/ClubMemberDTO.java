@@ -3,11 +3,11 @@ package exe201.flexora.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-
 public class ClubMemberDTO {
     private Long userId;
     private String userName;

@@ -14,6 +14,8 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+
 public class BugReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,6 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Data
+
 public class ShowRoomDTO {
     private String name;
     private String description;

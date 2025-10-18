@@ -7,6 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
+
+
 public class JoinClubDTO {
     private Long userId;
 }

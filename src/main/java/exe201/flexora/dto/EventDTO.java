@@ -11,6 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Setter
 @Getter
+
 public class EventDTO {
     private User organizer;
     private String title;
