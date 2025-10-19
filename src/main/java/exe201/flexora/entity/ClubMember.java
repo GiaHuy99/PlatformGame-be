@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @IdClass(ClubMemberId.class)
-@Data
 
 public class ClubMember {
 

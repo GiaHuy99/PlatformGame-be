@@ -7,7 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@Data
 
 public class RoomDTO {
     private String name;

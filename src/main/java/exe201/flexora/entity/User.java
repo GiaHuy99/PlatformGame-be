@@ -1,8 +1,9 @@
 package exe201.flexora.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -13,7 +14,8 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "users", schema = "exe201")
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

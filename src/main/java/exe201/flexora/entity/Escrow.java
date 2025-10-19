@@ -14,7 +14,6 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 
 public class Escrow {
     @Id

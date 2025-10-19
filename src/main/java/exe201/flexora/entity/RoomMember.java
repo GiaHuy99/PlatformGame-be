@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "room_members")
 @IdClass(RoomMemberId.class)
-@Data
 public class RoomMember {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)

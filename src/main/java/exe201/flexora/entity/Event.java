@@ -18,7 +18,6 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 
 public class Event {
     @Id

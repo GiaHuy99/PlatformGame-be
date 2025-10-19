@@ -16,7 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @Getter
-@Data
 
 public class Community {
     @Id
